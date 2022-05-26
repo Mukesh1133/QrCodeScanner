@@ -1,10 +1,10 @@
-package com.example.drivevoolqrcodescanner;
+package com.example.ushopcodescanner;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.ushopqrcodescanner.R;
 
 import java.util.ArrayList;
 
@@ -38,12 +39,15 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
     }
 
     @Override
-    public void onBindViewHolder( UrlListViewHolder holder, int position) {
+    public void onBindViewHolder(UrlListViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         String url = urlList.get(position);
-        
-        String urlDomain = String.format("https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=%s&size=64",url);
-        Glide.with(holder.imgUrlText.getContext()).load(urlDomain).into(holder.imgUrlText);
+        String domainName = getUrlDomainName(url);
+
+        char first = domainName.charAt(0);
+        Log.d("Domain", "Domain" +first);
+//        holder.txtDomain.setText(first);
+        holder.txtDomain.setText(first+"");
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,17 +64,38 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
     }
 
     public class UrlListViewHolder extends RecyclerView.ViewHolder{
-        ImageView imgUrlText;
+        TextView txtDomain;
         public UrlListViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgUrlText = itemView.findViewById(R.id.imgUrList);
+            txtDomain = itemView.findViewById(R.id.txtDomain);
         }
 
     }
 
-    private class LinkSpan extends URLSpan{
-        private LinkSpan(String url){
-            super(url);
+
+    public String getUrlDomainName(String url) {
+        String domainName = new String(url);
+
+        int index = domainName.indexOf("://");
+
+        if (index != -1) {
+            // keep everything after the "://"
+            domainName = domainName.substring(index + 3);
         }
+
+        index = domainName.indexOf('/');
+
+        if (index != -1) {
+            // keep everything before the '/'
+            domainName = domainName.substring(0, index);
+        }
+
+        // check for and remove a preceding 'www'
+        // followed by any sequence of characters (non-greedy)
+        // followed by a '.'
+        // from the beginning of the string
+        domainName = domainName.replaceFirst("^www.*?\\.", "");
+
+        return domainName;
     }
 }

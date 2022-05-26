@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.drivevoolqrcodescanner">
+    package="com.example.ushopqrcodescanner">
 
     <uses-feature android:name="android.hardware.camera.any" />
 
@@ -15,15 +15,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DrivevoolQrCodeScanner">
+        android:theme="@style/Theme.uShopQrCodeScanner">
         <activity
-            android:name=".WebViewActivity"
+            android:name="com.example.ushopcodescanner.WebViewActivity"
+            android:exported="false">
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
+            android:name="com.example.ushopcodescanner.UrlTilesActivity"
             android:exported="false" />
         <activity
-            android:name=".UrlListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name="com.example.ushopcodescanner.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

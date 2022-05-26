@@ -1,18 +1,28 @@
-package com.example.drivevoolqrcodescanner;
+package com.example.ushopcodescanner;
 
+import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
+import com.example.ushopqrcodescanner.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.Result;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -21,14 +31,19 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     CodeScanner codeScanner;
     CodeScannerView codeScannerView;
-    TextView txtUrl;
-    View nxtButton;
+    ImageView imgMenu;
+    public static final String MyPREFERENCE = "SharedPrefUrlList";
+    private SharedPreferences sharedPreferences1;
 
 
     @Override
@@ -36,7 +51,45 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         codeScannerView = findViewById(R.id.scannerView);
-        txtUrl = findViewById(R.id.txtUrl);
+
+
+//        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        getSupportActionBar().setDisplayShowCustomEnabled(true);
+//        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
+//        View view = getSupportActionBar().getCustomView();
+//        imgMenu = findViewById(R.id.imgMenu);
+//        imgMenu.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Dialog dialog = new Dialog()
+//            }
+//        });
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        String token = sharedPreferences.getString("Token", "");
+        Log.d("Tag", "Token" + token);
+
+        sharedPreferences1 = getSharedPreferences(MyPREFERENCE, Context.MODE_PRIVATE);
+        String json = sharedPreferences1.getString("MyPref3", "");
+        boolean isJsonValid = null != json && !json.isEmpty();
+        if (token != null && !token.isEmpty() && !token.equals("null") && isJsonValid) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            ArrayList<String> urlList1 = gson.fromJson(json, type);
+            Log.d("TAG", "List " + urlList1);
+            if (urlList1.size() <= 1) {
+                String url2 = urlList1.get(0);
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL2", url2);
+                startActivity(intent);
+            }
+
+            String url1 = urlList1.get(urlList1.size() - 1);
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL1", url1);
+            Log.d("TAG", "It reached." + url1);
+            startActivity(intent);
+        }
 
         codeScanner = new CodeScanner(this, codeScannerView);
 
@@ -47,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        txtUrl.setText(result.getText().toString());
+//                        txtUrl.setText(result.getText().toString());
+                        Log.d("MeterId", "id" + result);
+
                         Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL", result.getText().toString());
                         startActivity(intent);
                     }
@@ -63,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
     @Override
@@ -71,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         requestForCamera();
     }
-    private void requestForCamera(){
+
+    private void requestForCamera() {
         Dexter.withContext(this).withPermission(Manifest.permission.CAMERA).withListener(new PermissionListener() {
             @Override
             public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {

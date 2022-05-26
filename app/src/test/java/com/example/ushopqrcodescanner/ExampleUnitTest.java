@@ -1,4 +1,4 @@
-package com.example.drivevoolqrcodescanner;
+package com.example.ushopqrcodescanner;
 
 import org.junit.Test;
 
