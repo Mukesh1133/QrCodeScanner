@@ -24,6 +24,8 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
     private ArrayList<String> urlList;
     Context context;
 
+    public OnTileClickListener onTileClickListener;
+
     public UrlListAdapter(ArrayList<String> urlLists, Context context1) {
         this.urlList = urlLists;
         this.context = context1;
@@ -56,6 +58,13 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
                context.startActivity(intent);
             }
         });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onTileClickListener.onTileClicked(position);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -69,9 +78,7 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
             super(itemView);
             txtDomain = itemView.findViewById(R.id.txtDomain);
         }
-
     }
-
 
     public String getUrlDomainName(String url) {
         String domainName = new String(url);
@@ -97,5 +104,10 @@ public class UrlListAdapter extends RecyclerView.Adapter<UrlListAdapter.UrlListV
         domainName = domainName.replaceFirst("^www.*?\\.", "");
 
         return domainName;
+    }
+
+    public interface OnTileClickListener{
+
+        void onTileClicked(int position);
     }
 }

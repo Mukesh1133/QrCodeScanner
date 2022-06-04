@@ -52,27 +52,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         codeScannerView = findViewById(R.id.scannerView);
 
-
-//        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//        getSupportActionBar().setDisplayShowCustomEnabled(true);
-//        getSupportActionBar().setCustomView(R.layout.custom_action_bar);
-//        View view = getSupportActionBar().getCustomView();
-//        imgMenu = findViewById(R.id.imgMenu);
-//        imgMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Dialog dialog = new Dialog()
-//            }
-//        });
-
-
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         String token = sharedPreferences.getString("Token", "");
         Log.d("Tag", "Token" + token);
 
         sharedPreferences1 = getSharedPreferences(MyPREFERENCE, Context.MODE_PRIVATE);
         String json = sharedPreferences1.getString("MyPref3", "");
-        boolean isJsonValid = null != json && !json.isEmpty();
+        boolean isJsonValid = null != json && !json.isEmpty() && !json.equals("[]");
         if (token != null && !token.isEmpty() && !token.equals("null") && isJsonValid) {
             Gson gson = new Gson();
             Type type = new TypeToken<ArrayList<String>>() {
@@ -83,12 +69,16 @@ public class MainActivity extends AppCompatActivity {
                 String url2 = urlList1.get(0);
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL2", url2);
                 startActivity(intent);
+                Log.d("fun", "onCreate:"+ "first");
+            }else{
+                String url1 = urlList1.get(urlList1.size() - 1);
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL1", url1);
+                Log.d("TAG", "It reached." + url1);
+                Log.d("fun", "onCreate:"+ "second");
+                startActivity(intent);
             }
 
-            String url1 = urlList1.get(urlList1.size() - 1);
-            Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL1", url1);
-            Log.d("TAG", "It reached." + url1);
-            startActivity(intent);
+
         }
 
         codeScanner = new CodeScanner(this, codeScannerView);
@@ -101,10 +91,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 //                        txtUrl.setText(result.getText().toString());
-                        Log.d("MeterId", "id" + result);
+//                        Log.d("MeterId", "id" + result);
 
                         Intent intent = new Intent(MainActivity.this, WebViewActivity.class).putExtra("URL", result.getText().toString());
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
+                        Log.d("fun", "onCreate:"+ "third");
                     }
                 });
             }
